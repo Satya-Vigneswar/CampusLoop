@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#172554" />
+    <title>My wishlist | CampusLoop</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+  </head>
+  <body class="inner-page">
+    <header class="navbar">
+      <a class="logo" th:href="@{/}">Campus<span>Loop.</span></a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a th:href="@{/}">Marketplace</a>
+        <a th:href="@{/my-listings}">My listings</a>
+        <a th:href="@{/wishlist}" aria-current="page">Wishlist</a>
+      </nav>
+      <div class="nav-account">
+        <span class="welcome-user" th:text="|Hi, ${userName}|">Hi, student</span>
+        <a class="sell-btn" th:href="@{/products/new}">＋ Sell an item</a>
+        <form th:action="@{/logout}" method="post"><button class="logout-btn" type="submit">Log out</button></form>
+      </div>
+    </header>
+
+    <main class="listings-page">
+      <div class="listings-heading">
+        <div>
+          <p class="tagline">SAVED FOR LATER</p>
+          <h1>My wishlist</h1>
+          <p>Items you’ve saved from your campus marketplace.</p>
+        </div>
+        <a class="secondary-btn" th:href="@{/}">Browse marketplace</a>
+      </div>
+
+      <div class="notice notice-success" role="status" th:if="${successMessage}" th:text="${successMessage}"></div>
+      <div class="notice notice-error" role="alert" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+      <div class="product-grid listings-grid" th:if="${!#lists.isEmpty(wishlistItems)}">
+        <article class="product-card listing-card" th:each="item : ${wishlistItems}">
+          <a class="product-image-link" th:href="@{/products/{id}(id=${item.product.id})}">
+            <img class="product-image" th:src="${item.product.imageUrl}" th:alt="${item.product.name}" />
+            <span class="product-condition" th:text="${item.product.condition}">Good</span>
+          </a>
+          <form class="wishlist-form" th:action="@{/wishlist/{productId}/remove(productId=${item.product.id})}" method="post">
+            <button class="wishlist-button saved" type="submit" aria-label="Remove from wishlist">
+              <span aria-hidden="true">♥</span>
+            </button>
+          </form>
+          <div class="product-info">
+            <span class="product-category" th:text="${item.product.category}">Books</span>
+            <h2><a th:href="@{/products/{id}(id=${item.product.id})}" th:text="${item.product.name}">Product name</a></h2>
+            <div class="product-card-bottom">
+              <p class="product-seller">Listed by <strong th:text="${item.product.sellerName}">Student</strong></p>
+              <p class="price">₹<span th:text="${#numbers.formatDecimal(item.product.price, 1, 'COMMA', 2, 'POINT')}">0.00</span></p>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="empty-state" th:if="${#lists.isEmpty(wishlistItems)}">
+        <span class="empty-icon" aria-hidden="true">♡</span>
+        <h2>Your wishlist is ready for good finds</h2>
+        <p>Tap the heart on any listing to save it here.</p>
+        <a class="primary-btn" th:href="@{/}">Explore marketplace</a>
+      </div>
+    </main>
+
+    <footer class="site-footer compact-footer">
+      <a class="logo footer-logo" th:href="@{/}">Campus<span>Loop.</span></a>
+      <p>Your campus. Your marketplace.</p>
+    </footer>
+  </body>
+</html>

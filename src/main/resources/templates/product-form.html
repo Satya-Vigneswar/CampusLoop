@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#172554" />
+    <title>Sell an item | CampusLoop</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+  </head>
+  <body class="inner-page">
+    <header class="navbar">
+      <a class="logo" th:href="@{/}">Campus<span>Loop.</span></a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a th:href="@{/}">Marketplace</a>
+        <a th:href="@{/my-listings}">My listings</a>
+        <a th:href="@{/wishlist}">Wishlist</a>
+      </nav>
+      <div class="nav-account">
+        <span class="welcome-user" th:text="|Hi, ${sellerName}|">Hi, student</span>
+        <form th:action="@{/logout}" method="post"><button class="logout-btn" type="submit">Log out</button></form>
+      </div>
+    </header>
+
+    <main class="form-page">
+      <a class="back-link" th:href="@{/}">← Back to marketplace</a>
+      <section class="listing-form-card">
+        <div class="form-page-heading">
+          <p class="tagline">GIVE A GOOD FIND A NEW HOME</p>
+          <h1>List an item</h1>
+          <p>Share something useful with students on your campus.</p>
+        </div>
+
+        <form class="listing-form" th:action="@{/products}" th:object="${productForm}" method="post">
+          <div class="field">
+            <label for="name">Product name</label>
+            <input id="name" type="text" th:field="*{name}" placeholder="e.g. Calculus textbook"
+                   maxlength="100" required aria-describedby="name-error" />
+            <span class="field-error" id="name-error" th:if="${#fields.hasErrors('name')}"
+                  th:errors="*{name}"></span>
+          </div>
+
+          <div class="field">
+            <label for="description">Description</label>
+            <textarea id="description" th:field="*{description}" rows="4"
+                      placeholder="Tell students about its condition, features, or anything useful..."
+                      maxlength="1000" required aria-describedby="description-error"></textarea>
+            <span class="field-error" id="description-error" th:if="${#fields.hasErrors('description')}"
+                  th:errors="*{description}"></span>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="price">Price (₹)</label>
+              <input id="price" type="number" th:field="*{price}" placeholder="e.g. 250"
+                     min="0.01" max="99999999.99" step="0.01" required aria-describedby="price-error" />
+              <span class="field-error" id="price-error" th:if="${#fields.hasErrors('price')}"
+                    th:errors="*{price}"></span>
+            </div>
+            <div class="field">
+              <label for="category">Category</label>
+              <select id="category" th:field="*{category}" required aria-describedby="category-error">
+                <option value="">Choose a category</option>
+                <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
+              </select>
+              <span class="field-error" id="category-error" th:if="${#fields.hasErrors('category')}"
+                    th:errors="*{category}"></span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="condition">Condition</label>
+              <select id="condition" th:field="*{condition}" required aria-describedby="condition-error">
+                <option value="">Choose condition</option>
+                <option th:each="condition : ${conditions}" th:value="${condition}" th:text="${condition}"></option>
+              </select>
+              <span class="field-error" id="condition-error" th:if="${#fields.hasErrors('condition')}"
+                    th:errors="*{condition}"></span>
+            </div>
+            <div class="field">
+              <label for="sellerName">Seller</label>
+              <input id="sellerName" type="text" th:value="${sellerName}" readonly />
+              <span class="field-hint">Your account name is shown to buyers.</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="imageUrl">Product image URL</label>
+            <input id="imageUrl" type="url" th:field="*{imageUrl}"
+                   placeholder="https://example.com/image.jpg" maxlength="2048" required
+                   aria-describedby="imageUrl-hint imageUrl-error" />
+            <span class="field-hint" id="imageUrl-hint">Use a public HTTP or HTTPS image link. File uploads aren't needed.</span>
+            <span class="field-error" id="imageUrl-error" th:if="${#fields.hasErrors('imageUrl')}"
+                  th:errors="*{imageUrl}"></span>
+          </div>
+
+          <div class="field">
+            <label for="sellerPhone">WhatsApp phone number <span class="optional-label">Optional</span></label>
+            <input id="sellerPhone" type="tel" th:field="*{sellerPhone}"
+                   placeholder="+1 415 555 2671" maxlength="25" aria-describedby="phone-hint phone-error" />
+            <span class="field-hint" id="phone-hint">Include your country code so students can contact you on WhatsApp.</span>
+            <span class="field-error" id="phone-error" th:if="${#fields.hasErrors('sellerPhone')}"
+                  th:errors="*{sellerPhone}"></span>
+          </div>
+
+          <div class="form-actions">
+            <a class="secondary-btn" th:href="@{/}">Cancel</a>
+            <button class="primary-btn" type="submit">Publish product <span aria-hidden="true">→</span></button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <footer class="site-footer compact-footer">
+      <a class="logo footer-logo" th:href="@{/}">Campus<span>Loop.</span></a>
+      <p>Your campus. Your marketplace.</p>
+    </footer>
+  </body>
+</html>

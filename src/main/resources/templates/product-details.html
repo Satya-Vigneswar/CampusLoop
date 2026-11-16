@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#172554" />
+    <title th:text="${product.name + ' | CampusLoop'}">Product | CampusLoop</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+  </head>
+  <body class="inner-page">
+    <header class="navbar">
+      <a class="logo" th:href="@{/}">Campus<span>Loop.</span></a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a th:href="@{/}">Marketplace</a>
+        <a th:href="@{/my-listings}">My listings</a>
+        <a th:href="@{/wishlist}">Wishlist</a>
+      </nav>
+      <div class="nav-account">
+        <span class="welcome-user" th:text="|Hi, ${userName}|">Hi, student</span>
+        <a class="sell-btn" th:href="@{/products/new}">＋ Sell an item</a>
+        <form th:action="@{/logout}" method="post"><button class="logout-btn" type="submit">Log out</button></form>
+      </div>
+    </header>
+
+    <main class="detail-page">
+      <a class="back-link" th:href="@{/}">← Back to marketplace</a>
+      <div class="notice notice-success" role="status" th:if="${successMessage}" th:text="${successMessage}"></div>
+      <div class="notice notice-error" role="alert" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+      <section class="detail-card">
+        <div class="detail-image-wrap">
+          <img class="detail-image" th:src="${product.imageUrl}" th:alt="${product.name}" />
+          <span class="product-condition" th:text="${product.condition}">Good</span>
+        </div>
+        <div class="detail-info">
+          <div class="detail-kicker">
+            <span class="product-category" th:text="${product.category}">Books</span>
+            <span class="detail-campus">Campus listing</span>
+          </div>
+          <h1 th:text="${product.name}">Product name</h1>
+          <p class="detail-price">₹<span th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}">0.00</span></p>
+          <div class="detail-divider"></div>
+          <h2>About this item</h2>
+          <p class="detail-description" th:text="${product.description}">Product description</p>
+          <div class="seller-panel">
+            <span class="seller-avatar" aria-hidden="true"
+                  th:text="${#strings.substring(product.sellerName, 0, 1)}">S</span>
+            <div>
+              <span class="seller-label">Listed by</span>
+              <strong th:text="${product.sellerName}">Student</strong>
+            </div>
+          </div>
+          <a class="whatsapp-button" th:if="${!#strings.isEmpty(whatsappNumber)}"
+             th:href="|https://wa.me/${whatsappNumber}|" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">◉</span> Contact seller on WhatsApp
+          </a>
+          <p class="contact-unavailable" th:if="${#strings.isEmpty(whatsappNumber)}">
+            This seller hasn’t added a WhatsApp number yet.
+          </p>
+          <form class="detail-wishlist-form"
+                th:action="@{/wishlist/{productId}/toggle(productId=${product.id})}" method="post">
+            <input type="hidden" name="fromDetails" value="true" />
+            <button class="wishlist-button detail-wishlist-button" type="submit"
+                    th:classappend="${inWishlist} ? ' saved' : ''">
+              <span th:text="${inWishlist} ? '♥' : '♡'">♡</span>
+              <span th:text="${inWishlist} ? 'Saved to wishlist' : 'Save to wishlist'">Save to wishlist</span>
+            </button>
+          </form>
+          <a class="primary-btn detail-button" th:href="@{/my-listings}"
+             th:if="${product.sellerId == currentUserId}">Manage my listings</a>
+          <a class="secondary-btn detail-button" th:href="@{/}">Browse more items</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer compact-footer">
+      <a class="logo footer-logo" th:href="@{/}">Campus<span>Loop.</span></a>
+      <p>Your campus. Your marketplace.</p>
+    </footer>
+  </body>
+</html>

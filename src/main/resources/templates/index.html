@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#172554" />
+    <title>CampusLoop | Your Campus Marketplace</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+  </head>
+  <body>
+    <header class="navbar">
+      <a class="logo" th:href="@{/}" aria-label="CampusLoop home">Campus<span>Loop.</span></a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a th:href="@{/}">Marketplace</a>
+        <a th:href="@{/#categories}">Categories</a>
+        <a th:href="@{/my-listings}">My listings</a>
+        <a th:href="@{/wishlist}">Wishlist</a>
+      </nav>
+      <div class="nav-account">
+        <span class="welcome-user" th:text="|Hi, ${userName}|">Hi, student</span>
+        <a class="sell-btn" th:href="@{/products/new}">＋ Sell an item</a>
+        <form th:action="@{/logout}" method="post">
+          <button class="logout-btn" type="submit">Log out</button>
+        </form>
+      </div>
+    </header>
+
+    <main>
+      <div class="page-notices">
+        <div class="notice notice-success" role="status" th:if="${successMessage}" th:text="${successMessage}"></div>
+        <div class="notice notice-error" role="alert" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+      </div>
+      <section class="hero">
+        <div class="hero-content">
+          <p class="tagline">YOUR CAMPUS. YOUR MARKETPLACE.</p>
+          <h1>Good finds.<br />Great <span>connections.</span></h1>
+          <p class="hero-description">
+            Buy smarter. Sell easier. Find the things you need from the people right around you.
+          </p>
+          <div class="hero-buttons">
+            <a th:href="@{/#marketplace}" class="primary-btn">Explore listings <span aria-hidden="true">→</span></a>
+            <a th:href="@{/products/new}" class="secondary-btn">＋ Sell an item</a>
+          </div>
+          <p class="hero-welcome">Welcome to the loop, <strong th:text="${userName}">student</strong>.</p>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="visual-orbit orbit-a"></div>
+          <div class="visual-orbit orbit-b"></div>
+          <div class="visual-note note-books"><span>✦</span><strong>Pass it on.</strong><small>Good things find a new home.</small></div>
+          <div class="visual-note note-campus"><span class="online-dot"></span><strong>Right here on campus</strong></div>
+          <div class="visual-spark spark-a">✳</div>
+          <div class="visual-spark spark-b">✦</div>
+        </div>
+      </section>
+
+      <section class="market-tools" aria-label="Search marketplace">
+        <form class="search-form" th:action="@{/}" method="get">
+          <label class="search-input-wrap" for="market-search">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input id="market-search" type="search" name="q" th:value="${searchQuery}"
+                   placeholder="Search books, electronics, and more..." />
+          </label>
+          <label class="category-select-wrap" for="search-category">
+            <span class="visually-hidden">Filter by category</span>
+            <select id="search-category" name="category">
+              <option value="" th:selected="${selectedCategory == null}">All categories</option>
+              <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"
+                      th:selected="${category == selectedCategory}"></option>
+            </select>
+          </label>
+          <button class="search-button" type="submit">Search</button>
+        </form>
+      </section>
+
+      <section class="categories content-section" id="categories">
+        <div class="section-heading">
+          <div>
+            <p class="tagline">FIND YOUR NEXT FAVORITE</p>
+            <h2>Browse by category</h2>
+          </div>
+          <a class="text-link" th:href="@{/}">See everything <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="category-grid">
+          <a class="category-card" th:each="category : ${categories}"
+             th:href="@{/(category=${category})}"
+             th:classappend="${category == selectedCategory} ? ' selected' : ''">
+            <span class="category-icon" th:if="${category == 'Books'}">📚</span>
+            <span class="category-icon" th:if="${category == 'Electronics'}">💻</span>
+            <span class="category-icon" th:if="${category == 'Stationery'}">✏️</span>
+            <span class="category-icon" th:if="${category == 'Hostel Essentials'}">🏠</span>
+            <span class="category-icon" th:if="${category == 'Sports'}">⚽</span>
+            <span class="category-icon" th:if="${category == 'Others'}">✦</span>
+            <span class="category-name" th:text="${category}">Books</span>
+            <span class="category-arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="marketplace content-section" id="marketplace">
+        <div class="section-heading listing-heading">
+          <div>
+            <p class="tagline">FRESH FROM YOUR CAMPUS</p>
+            <h2 th:if="${selectedCategory == null}">Recently listed</h2>
+            <h2 th:if="${selectedCategory != null}" th:text="${selectedCategory}">Category</h2>
+            <p class="result-context" th:if="${searchQuery != ''}"
+               th:text="|Results for “${searchQuery}”|">Search results</p>
+          </div>
+          <a class="text-link" th:href="@{/products/new}">Have something to sell? <span aria-hidden="true">＋</span></a>
+        </div>
+
+        <div class="product-grid" th:if="${!#lists.isEmpty(products)}">
+          <article class="product-card" th:each="product : ${products}">
+            <a class="product-image-link" th:href="@{/products/{id}(id=${product.id})}">
+              <img class="product-image" th:src="${product.imageUrl}" th:alt="${product.name}" />
+              <span class="product-condition" th:text="${product.condition}">Good</span>
+            </a>
+            <form class="wishlist-form" th:action="@{/wishlist/{productId}/toggle(productId=${product.id})}" method="post">
+              <button class="wishlist-button" type="submit"
+                      th:classappend="${savedProductIds.contains(product.id)} ? ' saved' : ''"
+                      th:attr="aria-label=${savedProductIds.contains(product.id)} ? 'Remove from wishlist' : 'Save to wishlist'">
+                <span th:text="${savedProductIds.contains(product.id)} ? '♥' : '♡'">♡</span>
+              </button>
+            </form>
+            <div class="product-info">
+              <span class="product-category" th:text="${product.category}">Books</span>
+              <h3><a th:href="@{/products/{id}(id=${product.id})}" th:text="${product.name}">Product name</a></h3>
+              <div class="product-card-bottom">
+                <p class="product-seller">Listed by <strong th:text="${product.sellerName}">Student</strong></p>
+                <p class="price">₹<span th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}">0.00</span></p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(products)}">
+          <span class="empty-icon" aria-hidden="true">⌕</span>
+          <h3>No listings just yet</h3>
+          <p th:if="${searchQuery == '' and selectedCategory == null}">Be the first to share something with your campus community.</p>
+          <p th:if="${searchQuery != '' or selectedCategory != null}">Try another search or category, or add the first listing.</p>
+          <a class="primary-btn" th:href="@{/products/new}">＋ List an item</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="logo footer-logo" th:href="@{/}">Campus<span>Loop.</span></a>
+      <p>Your campus. Your marketplace.</p>
+      <p class="copyright">© 2026 CampusLoop. Built for students.</p>
+    </footer>
+
+  </body>
+</html>
